@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  done: false
+  datetime: 2025-01-12 01:09:18
+  todo: one
+
+two:
+  title: MyString
+  done: false
+  datetime: 2025-01-12 01:09:18
+  todo: two
