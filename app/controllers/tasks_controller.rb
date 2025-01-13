@@ -15,6 +15,12 @@ class TasksController < ApplicationController
 
     if @task.update(task_params)
       redirect_to todo_path(@task.todo_id), notice: "Task was successfully updated."
+        if @task.datetime.present? && (@task.datetime - Time.current) < 1.day
+          TaskMailer.deadline_warning(@task).deliver_now
+        end
+        if @task.todo.tasks.where.not(status: "done").empty?
+          TaskMailer.congratulations(@task.todo).deliver_now
+        end
     else
       redirect_to root_path, alert: "Task was not updated."
     end
