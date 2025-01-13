@@ -4,12 +4,22 @@
 
 <% @tasks.each do |task| %>
 
+  <% if task.done == true %>
+  <strike>
   <p> <%= task.title %> </p>
+  </strike>
     <%= form_for task do |f| %>
       <%= f.check_box :done, :value => task.done %>
-      <%= f.submit "Done" %>
+      <%= f.submit "Undo" %>
     <%end%>
 
+    <% elsif task.done == false%>
+         <p> <%= task.title %> </p>
+        <%= form_for task do |f| %>
+          <%= f.check_box :done, :value => task.done %>
+          <%= f.submit "Done" %>
+        <%end%>
+    <% end %>
 <% end %>
 
 <div>
@@ -17,11 +27,11 @@
 <%= form_for @task do |f| %>
   <p><%= f.text_field :title %> </p>
 
-  <%= f.check_box :done %>
+  <%= f.hidden_field :done, :value => false %>
 
   <%= f.date_field :datetime %>
 
-  <%= f.number_field :todo_id, value: @todo.id %>
+  <%= f.hidden_field :todo_id, :value => @todo.id %>
 
   <<%= f.submit "Add Task" %>
 
@@ -29,8 +39,5 @@
 </div>
 
 <div>
-  <%= link_to "Edit this todo", edit_todo_path(@todo) %> |
   <%= link_to "Back to todos", todos_path %>
-
-  <%= button_to "Destroy this todo", @todo, method: :delete %>
 </div>
