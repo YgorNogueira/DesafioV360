@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  devise_for :users
+  get "devise/sessions"
   resources :todos
   resources :tasks
 

@@ -1,9 +1,9 @@
 class TodosController < ApplicationController
-  before_action :set_todo, only: %i[ show edit update destroy ]
+  before_action :set_todo, only: %i[show edit update destroy]
 
   # GET /todos or /todos.json
   def index
-    @todos = Todo.all
+    @todos = current_user.todos
   end
 
   # GET /todos/1 or /todos/1.json
@@ -14,7 +14,7 @@ class TodosController < ApplicationController
 
   # GET /todos/new
   def new
-    @todo = Todo.new
+    @todo = current_user.todos.new
   end
 
   # GET /todos/1/edit
@@ -23,7 +23,7 @@ class TodosController < ApplicationController
 
   # POST /todos or /todos.json
   def create
-    @todo = Todo.new(todo_params)
+    @todo = current_user.todos.new(todo_params)
 
     respond_to do |format|
       if @todo.save
@@ -60,13 +60,14 @@ class TodosController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_todo
-      @todo = Todo.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def todo_params
-      params.expect(todo: [ :name ])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_todo
+    @todo = current_user.todos.find(params[:id]) # Aqui estamos buscando somente entre os todos do usuário atual
+  end
+
+  # Only allow a list of trusted parameters through.
+  def todo_params
+    params.require(:todo).permit(:name) # `permit` para permitir os parâmetros de forma segura
+  end
 end

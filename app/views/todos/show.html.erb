@@ -15,6 +15,7 @@
 
     <% elsif task.done == false%>
          <p> <%= task.title %> </p>
+       <p><%= task.datetime.strftime("%d/%m/%Y - %H:%M") if task.datetime.present? %></p>
         <%= form_for task do |f| %>
           <%= f.check_box :done, :value => task.done %>
           <%= f.submit "Done" %>
