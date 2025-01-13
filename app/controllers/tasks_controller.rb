@@ -18,7 +18,7 @@ class TasksController < ApplicationController
         if @task.datetime.present? && (@task.datetime - Time.current) < 1.day
           TaskMailer.deadline_warning(@task).deliver_now
         end
-        if @task.todo.tasks.where.not(status: "done").empty?
+        if @task.todo.tasks.where.not(done: true).empty?
           TaskMailer.congratulations(@task.todo).deliver_now
         end
     else
