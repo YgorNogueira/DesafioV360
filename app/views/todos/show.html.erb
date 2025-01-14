@@ -1,44 +1,84 @@
-<p style="color: green"><%= notice %></p>
-
-<%= render @todo %>
-
-<% @tasks.each do |task| %>
-
-  <% if task.done == true %>
-  <strike>
-  <p> <%= task.title %> </p>
-  </strike>
-    <%= form_for task do |f| %>
-      <%= f.check_box :done, :value => task.done %>
-      <%= f.submit "Undo" %>
-    <%end%>
-
-    <% elsif task.done == false%>
-         <p> <%= task.title %> </p>
-       <p><%= task.datetime.strftime("%d/%m/%Y - %H:%M") if task.datetime.present? %></p>
-        <%= form_for task do |f| %>
-          <%= f.check_box :done, :value => task.done %>
-          <%= f.submit "Done" %>
-        <%end%>
+<body class="bg-dark text-white">
+  <div class="container mt-5">
+    <% if notice.present? %>
+      <div class="alert alert-success text-center" role="alert">
+        <%= notice %>
+      </div>
     <% end %>
-<% end %>
 
-<div>
-  <h3> Add a task </h3>
-<%= form_for @task do |f| %>
-  <p><%= f.text_field :title %> </p>
+    <!-- Cartão do To-Do (nome da lista) -->
+    <div class="card shadow-sm mb-4 mx-auto" style="max-width: 500px;">
+      <div class="card-body text-center">
+        <h2 class="card-title"><%= @todo.name %></h2>
+      </div>
+    </div>
 
-  <%= f.hidden_field :done, :value => false %>
+    <!-- Lista de Tasks -->
+    <div class="mb-4">
+      <h4 class="text-center">Tasks</h4>
+      <% @tasks.each do |task| %>
+        <div class="card mb-3 mx-auto" style="max-width: 500px;">
+          <div class="card-body d-flex justify-content-between align-items-center">
+    <!-- Informações da Task -->
+    <div>
+      <% if task.done? %>
+        <strike class="text-muted">
+          <p class="fw-bold mb-1"><%= task.title %></p>
+        </strike>
+      <% else %>
+        <p class="fw-bold mb-1"><%= task.title %></p>
+      <% end %>
+      <p class="small text-muted mb-0"><%= task.datetime.strftime("%d/%m/%Y - %H:%M") if task.datetime.present? %></p>
+    </div>
 
-  <%= f.date_field :datetime %>
+    <!-- Formulário alinhado à direita -->
+    <%= form_with model: task, local: true, class: "d-flex ms-auto align-items-center gap-2" do |f| %>
+      <%= f.hidden_field :title, value: task.title %>
+      <%= f.hidden_field :todo_id, value: @todo.id %>
+      <%= f.check_box :done, class: "form-check-input border border-2" %>
+      <%= f.submit task.done? ? "Undo" : "Done", class: "btn btn-outline-primary btn-sm" %>
+    <% end %>
+  </div>
+        </div>
+      <% end %>
+    </div>
 
-  <%= f.hidden_field :todo_id, :value => @todo.id %>
+    <!-- Botão para adicionar nova task -->
+    <div class="text-center">
+      <button class="btn btn-success mb-4" type="button" data-bs-toggle="collapse" data-bs-target="#taskFormCollapse" aria-expanded="false" aria-controls="taskFormCollapse">
+        Add New Task
+      </button>
+    </div>
 
-  <<%= f.submit "Add Task" %>
+    <!-- Formulário de adição de Task colapsável -->
+    <div class="collapse mx-auto" id="taskFormCollapse" style="max-width: 500px;">
+      <div class="card shadow-sm p-4">
+        <h4 class="mb-4 text-center">Add a Task</h4>
+        <%= form_with model: @task, local: true do |f| %>
+          <div class="mb-3">
+            <%= f.label :title, "Task Title", class: "form-label" %>
+            <%= f.text_field :title, class: "form-control", placeholder: "Enter task title" %>
+          </div>
 
-<% end %>
-</div>
+          <%= f.hidden_field :done, value: false %>
 
-<div>
-  <%= link_to "Back to todos", todos_path %>
-</div>
+          <div class="mb-3">
+            <%= f.label :datetime, "Due Date and Time", class: "form-label" %>
+            <%= f.datetime_field :datetime, class: "form-control" %>
+          </div>
+
+          <%= f.hidden_field :todo_id, value: @todo.id %>
+
+          <div class="d-grid">
+            <%= f.submit "Add Task", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Botão de voltar -->
+    <div class="mt-4 text-center">
+      <%= link_to "Back to To-Dos", todos_path, class: "btn btn-secondary" %>
+    </div>
+  </div>
+</body>

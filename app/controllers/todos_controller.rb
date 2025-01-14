@@ -16,7 +16,7 @@ class TodosController < ApplicationController
   def new
     @todo = current_user.todos.new
     respond_to do |format|
-      format.turbo_stream { render partial: "todos/form", locals: { todo: @todo } }
+      format.turbo_stream { render :new }
       format.html
     end
   end
@@ -27,20 +27,14 @@ class TodosController < ApplicationController
 
   # POST /todos or /todos.json
   def create
-    @todo = current_user.todos.new(todo_params)
-
-    respond_to do |format|
-      if @todo.save
-        format.html { redirect_to @todo, notice: "Todo was successfully created." }
-        format.json { render :show, status: :created, location: @todo }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @todo.errors, status: :unprocessable_entity }
-      end
+    @todo = current_user.todos.build(todo_params)
+    if @todo.save
       respond_to do |format|
         format.turbo_stream
-        format.html { redirect_to todos_path }
+        format.html { redirect_to todos_path, notice: "To-Do created successfully!" }
       end
+    else
+      render :new, status: :unprocessable_entity
     end
   end
 

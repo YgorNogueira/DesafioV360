@@ -1,10 +1,10 @@
-<%= form_with(model: todo, local: true, class: "needs-validation d-grid gap-4") do |form| %>
+<%= form_with model: todo, local: true, class: "needs-validation d-grid gap-3" do |f| %>
   <% if todo.errors.any? %>
     <div class="alert alert-danger">
       <h4 class="alert-heading"><%= pluralize(todo.errors.count, "error") %> prohibited this To-Do from being saved:</h4>
       <ul>
-        <% todo.errors.each do |error| %>
-          <li><%= error.full_message %></li>
+        <% todo.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
         <% end %>
       </ul>
     </div>
@@ -12,12 +12,12 @@
 
   <!-- Título do To-Do -->
   <div class="form-floating">
-    <%= form.text_field :name, class: "form-control", id: "todoName", placeholder: "Enter To-Do name" %>
+    <%= f.text_field :name, class: "form-control", id: "todoName", placeholder: "Enter To-Do name" %>
     <label for="todoName">To-Do Name</label>
   </div>
 
-  <!-- Botão de Enviar -->
-  <div class="d-grid">
-    <%= form.submit "Save To-Do", class: "btn btn-primary btn-lg" %>
+  <!-- Botão de submit -->
+  <div class="d-grid mt-3">
+    <%= f.submit "Create To-Do", class: "btn btn-primary btn-lg" %>
   </div>
 <% end %>

@@ -1,70 +1,110 @@
 <!-- Navbar -->
 <body class="bg-dark text-white">
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Todo App</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Todo App</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-    <div class="collapse navbar-collapse" id="navbarContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://github.com/YgorNogueira" target="_blank">About Author</a>
-        </li>
-      </ul>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/YgorNogueira" target="_blank">About Author</a>
+          </li>
+        </ul>
 
-      <% if current_user %>
-        <div class="d-flex align-items-center">
-          <img src="<%= current_user.profile&.avatar.attached? ? url_for(current_user.profile.avatar) : 'https://via.placeholder.com/40' %>" class="rounded-circle me-2" alt="Avatar" width="40" height="40">
-          <span class="text-white me-3">Hi, <%= current_user.name.presence || "User" %>!</span>
-          <a href="<%= edit_profiles_path %>" class="btn btn-outline-light">Edit Profile</a>
-        </div>
-      <% else %>
-        <div class="d-flex">
-          <a href="<%= new_user_session_path %>" class="btn btn-outline-light me-2">Login</a>
-          <a href="<%= new_user_registration_path %>" class="btn btn-primary">Sign Up</a>
+        <% if current_user %>
+          <div class="d-flex align-items-center">
+            <img src="<%= current_user.profile&.avatar.attached? ? url_for(current_user.profile.avatar) : 'https://via.placeholder.com/40' %>" class="rounded-circle me-2" alt="Avatar" width="40" height="40">
+            <span class="text-white me-3">Hi, <%= current_user.name.presence || "User" %>!</span>
+            <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "btn btn-outline-light", data: { confirm: "Are you sure you want to log out?" } %>
+            <a href="<%= edit_profiles_path %>" class="btn btn-outline-light">Edit Profile</a>
+          </div>
+        <% else %>
+          <div class="d-flex">
+            <a href="<%= new_user_session_path %>" class="btn btn-outline-light me-2">Login</a>
+            <a href="<%= new_user_registration_path %>" class="btn btn-primary">Sign Up</a>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Conteúdo principal -->
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">Your To-Do Lists</h1>
+
+    <% if notice %>
+      <p class="alert alert-success text-center"><%= notice %></p>
+    <% end %>
+
+    <!-- Botão de exibir formulário de criação -->
+    <div class="text-center mb-4">
+      <%= link_to "New To-Do List", new_todo_path, class: "btn btn-primary btn-lg", data: { turbo_frame: "new_todo_frame" } %>
+    </div>
+
+    <!-- Turbo Frame para exibir o formulário de criação -->
+    <turbo-frame id="new_todo_frame">
+      <!-- Formulário vazio será carregado dinamicamente aqui -->
+    </turbo-frame>
+
+    <!-- Lista de To-Do Lists -->
+    <div class="accordion" id="todoAccordion">
+      <% @todos.each_with_index do |todo, index| %>
+        <div class="accordion-item mb-3">
+          <h2 class="accordion-header" id="heading<%= index %>">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<%= index %>" aria-expanded="false" aria-controls="collapse<%= index %>">
+              <strong><%= todo.name %></strong>
+            </button>
+          </h2>
+          <div id="collapse<%= index %>" class="accordion-collapse collapse" aria-labelledby="heading<%= index %>" data-bs-parent="#todoAccordion">
+            <div class="accordion-body">
+              <!-- Tasks da lista -->
+              <% if todo.tasks.any? %>
+                <ul class="list-group">
+                  <% todo.tasks.each do |task| %>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      <!-- Checkbox e nome da task -->
+                      <div class="d-flex align-items-start gap-2">
+                        <%= form_with model: task, local: true, class: "d-inline" do |f| %>
+                        <div>
+                          <% if task.done? %>
+                            <strike class="text-muted">
+                              <p class="fw-bold mb-0"><%= task.title %></p>
+                            </strike>
+                          <% else %>
+                            <p class="fw-bold mb-0"><%= task.title %></p>
+                          <% end %>
+                          <p class="small text-muted mb-0"><%= task.datetime.strftime("%d/%m/%Y - %H:%M") if task.datetime.present? %></p>
+                        </div>
+                        <div>
+                          <%= f.check_box :done, class: "form-check-input border border-2", checked: task.done? %>
+                          <%= f.submit task.done? ? "Undo" : "Done", class: "btn btn-outline-primary btn-sm" %>
+                        </div>
+                        <% end %>
+                      </div>
+
+                    </li>
+                  <% end %>
+                </ul>
+              <% else %>
+                <p class="text-muted text-center">No tasks for this to-do list yet.</p>
+              <% end %>
+
+              <!-- Botões de ação -->
+              <div class="d-flex justify-content-end gap-2 mt-3">
+                <%= link_to "Show", todo, class: "btn btn-info btn-sm" %>
+                <%= link_to "Edit", edit_todo_path(todo), class: "btn btn-warning btn-sm" %>
+                <%= button_to "Delete", todo, method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn btn-danger btn-sm" %>
+              </div>
+            </div>
+          </div>
         </div>
       <% end %>
     </div>
   </div>
-</nav>
-
-<!-- Conteúdo principal -->
-<div class="container mt-5">
-  <h1 class="text-center mb-4">Your To-Do Lists</h1>
-
-  <% if notice %>
-    <p class="alert alert-success text-center"><%= notice %></p>
-  <% end %>
-
-  <!-- Botão de exibir formulário de criação -->
-  <div class="text-center mb-4">
-    <%= link_to "New To-Do List", new_todo_path, class: "btn btn-primary btn-lg", data: { turbo_frame: "new-todo-form" } %>
-  </div>
-
-  <!-- Turbo Frame para exibir o formulário de criação -->
-  <turbo-frame id="new-todo-form">
-    <!-- Formulário vazio será carregado dinamicamente aqui -->
-  </turbo-frame>
-
-  <!-- Lista de To-Do Lists -->
-  <div class="list-group">
-    <% @todos.each do |todo| %>
-      <div class="list-group-item mb-3 p-4 shadow-sm">
-        <h5><%= todo.title %></h5>
-        <p><%= todo.description %></p>
-
-        <div class="d-flex justify-content-end gap-2 mt-3">
-          <%= link_to "Show", todo, class: "btn btn-info btn-sm" %>
-          <%= link_to "Edit", edit_todo_path(todo), class: "btn btn-warning btn-sm" %>
-          <%= button_to "Delete", todo, method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn btn-danger btn-sm" %>
-        </div>
-      </div>
-    <% end %>
-  </div>
-</div>
 </body>
