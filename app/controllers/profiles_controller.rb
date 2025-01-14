@@ -9,10 +9,9 @@ class ProfilesController < ApplicationController
 
   def update
     if @profile.update(profile_params)
-      redirect_to root_path, notice: "Profile updated"
-
+      redirect_to todos, notice: "Profile updated successfully!"
     else
-      render :edit, status: :unprocessable_entity
+      render :edit
     end
   end
 
@@ -20,7 +19,7 @@ class ProfilesController < ApplicationController
   private
 
   def set_profile
-    @profile = current_user.profile
+    @profile = current_user.profile || current_user.create_profile
   end
 
   def profile_params

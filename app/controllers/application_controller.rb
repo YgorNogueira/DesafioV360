@@ -4,6 +4,15 @@ class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
   allow_browser versions: :modern
 
+  def after_sign_up_path_for(resource)
+    todos_path # Caminho para redirecionar após criar a conta
+  end
+
+  # Personaliza o caminho após login
+  def after_sign_in_path_for(resource)
+    todos_path # Redireciona para todos#index também ao logar
+  end
+
   protected
 
   def configure_permitted_parameters

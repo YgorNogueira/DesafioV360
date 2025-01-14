@@ -15,6 +15,10 @@ class TodosController < ApplicationController
   # GET /todos/new
   def new
     @todo = current_user.todos.new
+    respond_to do |format|
+      format.turbo_stream { render partial: "todos/form", locals: { todo: @todo } }
+      format.html
+    end
   end
 
   # GET /todos/1/edit
@@ -32,6 +36,10 @@ class TodosController < ApplicationController
       else
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @todo.errors, status: :unprocessable_entity }
+      end
+      respond_to do |format|
+        format.turbo_stream
+        format.html { redirect_to todos_path }
       end
     end
   end
