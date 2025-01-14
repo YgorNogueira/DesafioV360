@@ -1,0 +1,19 @@
+<h2> Congratulations, <%= @user.name %>! </h2>
+<p>You have finished all the tasks in the list "<strong><%= @todo.name %></strong>". Here are some insights:</p>
+
+<% if @task_durations.any? %>
+  <ul>
+    <% @task_durations.each do |task| %>
+      <li>
+        <strong><%= task[:title] %>:</strong>
+        <% if task[:duration] > 0 %>
+          <%= task[:duration] %> hours
+        <% else %>
+          Duration data unavailable.
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No task duration data available.</p>
+<% end %>

@@ -1,11 +1,11 @@
-<% content_for :title, "New todo" %>
+<div class="d-flex justify-content-center align-items-center vh-100">
+  <turbo-frame id="new_todo_frame" class="p-4 shadow rounded bg-light" style="max-width: 400px; width: 100%;">
+    <h2 class="text-center mb-4">Create a New To-Do</h2>
+    
+    <%= render "form", todo: @todo %>
 
-<h1>New todo</h1>
-
-<%= render "form", todo: @todo %>
-
-<br>
-
-<div>
-  <%= link_to "Back to todos", todos_path %>
+    <div class="mt-3 text-center">
+      <%= link_to "Cancel", todos_path, class: "btn btn-secondary" %>
+    </div>
+  </turbo-frame>
 </div>

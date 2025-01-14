@@ -1,9 +1,9 @@
 class TodosController < ApplicationController
-  before_action :set_todo, only: %i[ show edit update destroy ]
+  before_action :set_todo, only: %i[show edit update destroy]
 
   # GET /todos or /todos.json
   def index
-    @todos = Todo.all
+    @todos = current_user.todos
   end
 
   # GET /todos/1 or /todos/1.json
@@ -14,7 +14,11 @@ class TodosController < ApplicationController
 
   # GET /todos/new
   def new
-    @todo = Todo.new
+    @todo = current_user.todos.new
+    respond_to do |format|
+      format.turbo_stream { render :new }
+      format.html
+    end
   end
 
   # GET /todos/1/edit
@@ -23,16 +27,14 @@ class TodosController < ApplicationController
 
   # POST /todos or /todos.json
   def create
-    @todo = Todo.new(todo_params)
-
-    respond_to do |format|
-      if @todo.save
-        format.html { redirect_to @todo, notice: "Todo was successfully created." }
-        format.json { render :show, status: :created, location: @todo }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @todo.errors, status: :unprocessable_entity }
+    @todo = current_user.todos.build(todo_params)
+    if @todo.save
+      respond_to do |format|
+        format.turbo_stream
+        format.html { redirect_to todos_path, notice: "To-Do created successfully!" }
       end
+    else
+      render :new, status: :unprocessable_entity
     end
   end
 
@@ -60,13 +62,14 @@ class TodosController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_todo
-      @todo = Todo.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def todo_params
-      params.expect(todo: [ :name ])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_todo
+    @todo = current_user.todos.find(params[:id]) # Aqui estamos buscando somente entre os todos do usuário atual
+  end
+
+  # Only allow a list of trusted parameters through.
+  def todo_params
+    params.require(:todo).permit(:name) # `permit` para permitir os parâmetros de forma segura
+  end
 end
