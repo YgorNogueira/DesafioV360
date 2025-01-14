@@ -85,7 +85,7 @@ Sinta-se à vontade para contribuir com melhorias no projeto. Faça um fork, cri
 
 ## **Licença**
 
-Este projeto é distribuído sob a licença MIT (se aplicável).
+Não há licenciamento para este projeto.
 
 ---
 
