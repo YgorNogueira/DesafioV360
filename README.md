@@ -1,4 +1,4 @@
-# To-Do App
+README.md
 
 Este projeto é uma aplicação Rails para ajudar os usuários a gerenciar suas tarefas diárias. A aplicação permite criar, visualizar, editar e excluir listas de tarefas. Além disso, possui autenticação de usuários com Devise e perfis personalizados.
 
